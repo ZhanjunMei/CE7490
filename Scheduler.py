@@ -46,8 +46,9 @@ class PASch_Scheduler(BaseTimer):
                 final_worker = self.find_least_loaded_worker()
             else:
                 final_woker = worker2
+        "具体怎样给一个worker分配任务？"
         
-        
+
 
         
         
