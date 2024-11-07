@@ -39,15 +39,22 @@ class Worker(BaseTimer):
     def __init__(self,
         threshold,
         cache_size,
+        name,
         logger=None
     ):
         self.threshold = threshold
         self.cache_size = cache_size
-        
+        self.name = name
         self.threads = [WorkerThread() for _ in range(threshold)]
         self.cached_pkgs = {}
 
+    def get_load(self):
+        
+        return 
 
+    def get_name(self):
+        return self.name
+    
     def get_next_time(self):
         next_time = sys.maxsize
         for t in self.threads:

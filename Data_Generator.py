@@ -77,10 +77,23 @@ def package_generator(num_tasks, package_path = "/Users/meizhanjun/codes/CE7490_
 
 class Functions:
     def __init__(self,num):
-          self.arrival_times = arrival_generator(mean_interarrival_time=0.1, num_events=num)
-          self.packages = package_generator(num_tasks=num)
+        self.arrival_times = arrival_generator(mean_interarrival_time=0.1, num_events=num)
+        self.packages = package_generator(num_tasks=num)
+        self.task_num = num
     
+    def get_packages(self):
+        return self.packages 
+    
+    def get_arrivals(self):
+        return self.arrival_times
+    
+    def get_task_num(self):
+        return self.task_num
+
     def get_arrival_time(self,Function_ID):
+        if Function_ID>self.task_num:
+            print("no more Functions!!")
+            return -1
         return self.arrival_times[Function_ID-1]
     
     def get_package_info(self,Function_ID):
@@ -89,9 +102,21 @@ class Functions:
         # self.packages[Function_ID]["import_time"]
         # self.packages[Function_ID]["populatiry"]
         return self.packages[Function_ID-1]
-
-tasks = Functions(num =5)
-print(tasks.get_package_info(1))
+    
+    def get_laegest_package_info(self,Function_ID):
+        max_size = -1
+        package_ID = -1
+        for i,package in enumerate(self.packages[Function_ID-1]):
+            print(i)
+            if package["size"]>max_size:
+                max_size = package["size"]
+                package_ID = i
+        return self.packages[Function_ID-1][package_ID]
+    
+tasks = Functions(5)
+package_path = "/Users/meizhanjun/codes/CE7490_GroupProject/CE7490-Severless_Computing/CE7490/pypi_package_data.csv"
+pypi_packages = read_package_data_from_csv(package_path)
+print(pypi_packages[0][1])
 
           
 

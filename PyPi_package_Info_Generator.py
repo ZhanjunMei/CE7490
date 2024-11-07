@@ -56,16 +56,7 @@ print(f"Package data saved to 'pypi_package_data.csv'")
 
 
 
-# import numpy as np
-
-# # 假设有10个包
-# pypi_packages = ['package_1', 'package_2', 'package_3', 'package_4', 'package_5', 
-#                  'package_6', 'package_7', 'package_8', 'package_9', 'package_10']
-
-# # 生成流行度，参数为s=1.1，包数量为10
-# popularity = np.random.zipf(1.8, 10)
-
-# print("Generated popularity:", popularity)
+#
 
 
 
