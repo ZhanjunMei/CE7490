@@ -113,12 +113,15 @@ class Functions:
                 package_ID = i
         return self.packages[Function_ID-1][package_ID]
     
-tasks = Functions(5)
-package_path = "/Users/meizhanjun/codes/CE7490_GroupProject/CE7490-Severless_Computing/CE7490/pypi_package_data.csv"
-pypi_packages = read_package_data_from_csv(package_path)
-print(pypi_packages[0][1])
+# tasks = Functions(5)
 
-          
+# print(tasks.get_package_info(1))
+
+# print(tasks.get_arrival_time(1))
+# print(tasks.get_arrival_time(2))
+
+# print(tasks.get_arrival_time(3))
+
 
 
 
