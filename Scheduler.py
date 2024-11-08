@@ -9,8 +9,10 @@ class PASch_Scheduler(BaseTimer):
         self.mapper = mapper
         self.task_finished = 0
 
-    def get_affinity_nodes(self, package_name):
+
+    def get_affinity_workers(self, package_name):
         return self.mapper._find_two_closest_workers(package_name)
+
 
     def find_least_loaded_worker(self):
         min = sys.maxsize
@@ -20,6 +22,7 @@ class PASch_Scheduler(BaseTimer):
                 min = worker.get_load()
                 least_loaded_worker = worker
         return least_loaded_worker
+    
     
     def allocate(self, Function_ID):
         package_name = self.tasks.get_largest_package_info(Function_ID)["name"]
@@ -37,22 +40,18 @@ class PASch_Scheduler(BaseTimer):
                 worker2_load = worker.get_load()
                 worker2 = worker
         if worker1_load<=worker2_load:
-            if worker1._is_overload():
+            if worker1.is_overload():
                 final_worker = self.find_least_loaded_worker()
             else:
-                final_woker = worker1
+                final_worker = worker1
         else:
-            if worker2._is_overload():
+            if worker2.is_overload():
                 final_worker = self.find_least_loaded_worker()
             else:
-                final_woker = worker2
-        "具体怎样给一个worker分配任务？"
+                final_worker = worker2
+                
+        final_worker.set_task(self.tasks.get_packages()[Function_ID])
         
-
-
-        
-        
-            
 
     def get_next_time(self):
         ans = self.tasks.get_arrival_time(self.task_finished+1)

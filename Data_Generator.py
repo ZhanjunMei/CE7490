@@ -20,7 +20,7 @@ def read_package_data_from_csv(filename="pypi_package_data.csv"):
     return package_data
 
 
-def package_generator(num_tasks, package_path = "/Users/meizhanjun/codes/CE7490_GroupProject/CE7490-Severless_Computing/CE7490/pypi_package_data.csv"):
+def package_generator(num_tasks, package_path = "./pypi_package_data.csv"):
 
     pypi_packages = read_package_data_from_csv(package_path)
     popularity = np.random.zipf(1.1, len(pypi_packages))
@@ -103,7 +103,7 @@ class Functions:
         # self.packages[Function_ID]["populatiry"]
         return self.packages[Function_ID-1]
     
-    def get_laegest_package_info(self,Function_ID):
+    def get_largest_package_info(self,Function_ID):
         max_size = -1
         package_ID = -1
         for i,package in enumerate(self.packages[Function_ID-1]):
@@ -112,16 +112,7 @@ class Functions:
                 max_size = package["size"]
                 package_ID = i
         return self.packages[Function_ID-1][package_ID]
-    
-# tasks = Functions(5)
-
-# print(tasks.get_package_info(1))
-
-# print(tasks.get_arrival_time(1))
-# print(tasks.get_arrival_time(2))
-
-# print(tasks.get_arrival_time(3))
-
+          
 
 
 

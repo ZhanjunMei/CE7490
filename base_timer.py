@@ -1,10 +1,11 @@
 class BaseTimer():
-
-    def get_next_time(self,) -> int:
+    
+    def get_next_time(self,):
         """
             return time interval after which some states will change
         """
         pass
+    
 
     def step(self, time_step):
         """
