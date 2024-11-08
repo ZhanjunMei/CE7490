@@ -22,7 +22,7 @@ def main():
 
         # get_next_time() from all generators to fine minimum next_time
         min_times = [w.get_next_time() for w in workers]
-        min_times.append(float(scheduler.get_next_time()))
+        min_times.append(float(scheduler.get_next_time())-now_time)
         min_time = min(min_times)
         
         # step(min_time) for all Timers
