@@ -8,7 +8,7 @@ class PASch_Scheduler(BaseTimer):
         self.mapper = mapper
         self.task_finished = 0
 
-    def get_affinity_nodes(self, package_name):
+    def get_affinity_workers(self, package_name):
         return self.mapper._find_two_closest_workers(package_name)
 
     def find_least_loaded_worker(self):
@@ -21,6 +21,7 @@ class PASch_Scheduler(BaseTimer):
         return least_loaded_worker
     
     def allocate(self, Function_ID):
+
         package_name = self.tasks.get_largest_package_info(Function_ID)["name"]
         worker1_name, worker2_name = self.get_affinity_workers(package_name)
         worker1_load = -1
@@ -45,15 +46,12 @@ class PASch_Scheduler(BaseTimer):
                 final_worker = self.find_least_loaded_worker()
             else:
                 final_worker = worker2
-        final_worker.set_task(self.tasks.get_packages(Function_ID))
+
+        final_worker.set_task(self.tasks.get_package_info(Function_ID))
 
     def get_next_time(self):
         ans = self.tasks.get_arrival_time(self.task_finished+1)
-        if ans != -1:
-            return ans
-        else:
-            print("PASch has no more tasks!!!")
-            return -1
+        return ans
 
 
     def step(self, time_step):

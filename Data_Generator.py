@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import csv
+import sys
 
 def arrival_generator(mean_interarrival_time=0.1, num_events=10):
     interarrival_times = np.random.exponential(scale=mean_interarrival_time, size=num_events)
@@ -92,8 +93,7 @@ class Functions:
 
     def get_arrival_time(self,Function_ID):
         if Function_ID>self.task_num:
-            print("no more Functions!!")
-            return -1
+            return sys.maxsize
         return self.arrival_times[Function_ID-1]
     
     def get_package_info(self,Function_ID):
@@ -107,12 +107,10 @@ class Functions:
         max_size = -1
         package_ID = -1
         for i,package in enumerate(self.packages[Function_ID-1]):
-            print(i)
             if package["size"]>max_size:
                 max_size = package["size"]
                 package_ID = i
         return self.packages[Function_ID-1][package_ID]
-          
 
 
 
