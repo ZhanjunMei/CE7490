@@ -1,5 +1,4 @@
 from base_timer import BaseTimer
-from worker import Worker
 import sys
 class PASch_Scheduler(BaseTimer):
     def __init__(self,tasks,workers,mapper):
@@ -9,10 +8,8 @@ class PASch_Scheduler(BaseTimer):
         self.mapper = mapper
         self.task_finished = 0
 
-
-    def get_affinity_workers(self, package_name):
+    def get_affinity_nodes(self, package_name):
         return self.mapper._find_two_closest_workers(package_name)
-
 
     def find_least_loaded_worker(self):
         min = sys.maxsize
@@ -22,7 +19,6 @@ class PASch_Scheduler(BaseTimer):
                 min = worker.get_load()
                 least_loaded_worker = worker
         return least_loaded_worker
-    
     
     def allocate(self, Function_ID):
         package_name = self.tasks.get_largest_package_info(Function_ID)["name"]
@@ -49,9 +45,7 @@ class PASch_Scheduler(BaseTimer):
                 final_worker = self.find_least_loaded_worker()
             else:
                 final_worker = worker2
-                
-        final_worker.set_task(self.tasks.get_packages()[Function_ID])
-        
+        final_worker.set_task(self.tasks.get_packages(Function_ID))
 
     def get_next_time(self):
         ans = self.tasks.get_arrival_time(self.task_finished+1)
@@ -64,7 +58,7 @@ class PASch_Scheduler(BaseTimer):
 
     def step(self, time_step):
         self.abs_time += time_step
-        if self.get_next_time() == self.abs_time:
+        while self.get_next_time() <= self.abs_time:
             self.allocate(self.task_finished+1)
             self.task_finished+=1
             print(f"Task {self.task_finished} arrived at PASch_Scheduler at {self.abs_time}.")
