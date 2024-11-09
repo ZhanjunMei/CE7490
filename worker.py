@@ -1,6 +1,7 @@
 import numpy as np
 from enum import Enum
 import math
+import sys
 
 from base_timer import BaseTimer
 
@@ -21,7 +22,8 @@ class WorkerThread(BaseTimer):
         self.remain_time = 0
         self.required_pkgs = []
         self.loading_idx = 0
-        
+        self.tid = 0
+
         
     def _prepare_loading_ch_state(self):
         if not self.state == "PREPARE_LOADING":
@@ -35,6 +37,7 @@ class WorkerThread(BaseTimer):
         # has pkg to load
         if self.loading_idx < len(self.required_pkgs):
             self.remain_time = self.required_pkgs[self.loading_idx]["import_time"]
+            self.state = "LOADING"
         # all pkgs are cached, ready to execute
         else:
             self.state = "WORKING"
@@ -70,6 +73,7 @@ class WorkerThread(BaseTimer):
                 self._prepare_loading_ch_state()
             else:
                 print("[WorkerThread] step error: time_step greater than exe_time")
+                sys.exit(1)
         
         elif self.state == "LOADING":
             if time_step < self.remain_time:
@@ -82,20 +86,24 @@ class WorkerThread(BaseTimer):
                 self._prepare_loading_ch_state()
             else:
                 print("[WorkerThread] step error: time_step greater than exe_time")
+                sys.exit(1)
 
         elif self.state == "WORKING":
             if time_step < self.remain_time:
                 self.remain_time -= time_step
             elif math.fabs(time_step - self.remain_time) < 1e-6:
-                print(f"{self.worker.name}_t_{self.t_id} finished work at {self.abs_time}")
+                finish_time = self.abs_time + time_step
+                self.logger.task_finish(self.tid, finish_time)
+                print(f"{self.worker.name}_t_{self.t_id} finished work {self.tid} at {finish_time}")
                 self.state = "FREE"
             else:
                 print("[WorkerThread] step error: time_step greater than exe_time")
+                sys.exit(1)
         
         self.abs_time += time_step
     
     
-    def set_task(self, pkgs):
+    def set_task(self, pkgs, fid):
         """
             pkgs = [
                 {
@@ -112,6 +120,7 @@ class WorkerThread(BaseTimer):
         self.state = "PREPARE_LOADING"
         self.required_pkgs = pkgs
         self.loading_idx = 0
+        self.tid = fid
 
 
 class Worker(BaseTimer):
@@ -125,6 +134,7 @@ class Worker(BaseTimer):
         self.name = name
         self.threshold = threshold
         self.cache_size = cache_size
+        self.logger = logger
         
         self.threads = [WorkerThread(self, i, logger) for i in range(threshold)]
         self.abs_time = 0
@@ -190,13 +200,23 @@ class Worker(BaseTimer):
         self.abs_time += time_step
     
 
-    def set_task(self, pkgs):
+    def set_task(self, pkgs, fid):
         assigned = False
         for t in self.threads:
             if t.state == "FREE":
-                t.set_task(pkgs)
+                t.set_task(pkgs, fid)
                 assigned = True
                 break
-        if not assigned:
+
+        # logging for hit rate
+        if assigned:
+            cached_names = set([p["name"] for p in self.cached_pkgs])
+            all_names = set([p["name"] for p in pkgs])
+            self.logger.add_pkg_num(len(all_names))
+            self.logger.add_cached_num(len(cached_names & all_names))
+
+        else:
             print("[Worker] set task failed: set task to an inavailable worker")
+            exit(1)
+
         

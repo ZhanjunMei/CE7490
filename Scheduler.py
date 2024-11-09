@@ -1,12 +1,13 @@
 from base_timer import BaseTimer
 import sys
 class PASch_Scheduler(BaseTimer):
-    def __init__(self,tasks,workers,mapper):
+    def __init__(self,tasks,workers,mapper,logger):
         self.abs_time = 0
         self.tasks = tasks
         self.workers = workers
         self.mapper = mapper
         self.task_finished = 0
+        self.logger = logger
 
     def get_affinity_workers(self, package_name):
         return self.mapper._find_two_closest_workers(package_name)
@@ -46,12 +47,21 @@ class PASch_Scheduler(BaseTimer):
                 final_worker = self.find_least_loaded_worker()
             else:
                 final_worker = worker2
-
-        final_worker.set_task(self.tasks.get_package_info(Function_ID))
+                
+        task = self.tasks.get_package_info(Function_ID)
+        arrive_time = self.tasks.get_arrival_time(Function_ID)
+        self.logger.task_arrive(Function_ID, arrive_time)
+        self.logger.task_alloc(Function_ID, arrive_time) # same time
+        
+        final_worker.set_task(task, Function_ID)
 
     def get_next_time(self):
         ans = self.tasks.get_arrival_time(self.task_finished+1)
         return ans
+
+
+    def has_next(self):
+        return self.task_finished + 1 < len(self.tasks.get_packages())
 
 
     def step(self, time_step):
