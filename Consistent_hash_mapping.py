@@ -66,6 +66,15 @@ class ConsistentHashingWithPowerOfTwoChoices:
                 return worker
         # 若未找到，则返回第一个节点
         return next(iter(self.worker_points))
+    
+    def _find_closest_worker_byname(self,package_name):
+        """顺时针查找最近的 worker。"""
+        point = hash_fn(package_name) 
+        for worker, worker_point in self.worker_points.items():
+            if point <= worker_point:
+                return worker
+        # 若未找到，则返回第一个节点
+        return next(iter(self.worker_points))
 
     # def assign_worker_for_task(self, package_name):
     #     """根据包的哈希值，找到最优的 worker 节点来处理任务。"""

@@ -8,6 +8,11 @@ def arrival_generator(mean_interarrival_time=0.1, num_events=10):
     arrival_times = np.cumsum(interarrival_times)
     return arrival_times
 
+def running_time_generator(mean=0.1, num_tasks=10):
+    running_times = np.random.exponential(scale=mean, size=num_tasks)
+    #plus 1s launching time
+    return [a+1 for a in running_times]
+
 # 读取 CSV 文件并访问数据
 def read_package_data_from_csv(filename="pypi_package_data.csv"):
     package_data = []
@@ -62,17 +67,6 @@ def package_generator(num_tasks, package_path = "./pypi_package_data.csv"):
     
     return tasks
 
-# # 示例使用
-# num_tasks = 10  # 生成5个任务
-# package_path = "/Users/meizhanjun/codes/CE7490_GroupProject/CE7490-Severless_Computing/CE7490/pypi_package_data.csv"
-# tasks = package_generator(num_tasks,package_path)
-
-# # 打印任务信息
-# for i, task in enumerate(tasks, 1):
-#     print(f"Task {i}:")
-#     for pkg in task:
-#         print(f"  Package Name: {pkg['name']}, Size: {pkg['size']:.2f} KB, Import Time: {pkg['import_time']:.2f}s, Popularity: {pkg['popularity']}")
-#     print()
 
 
 
@@ -80,20 +74,27 @@ class Functions:
     def __init__(self,num):
         self.arrival_times = arrival_generator(mean_interarrival_time=0.1, num_events=num)
         self.packages = package_generator(num_tasks=num)
+        self.launch_and_running_time = running_time_generator(mean = 0.1,num_tasks=num)
         self.task_num = num
     
+    def get_last_arrival_time(self):
+        return self.arrival_times[self.task_num-1]
+
     def get_packages(self):
         return self.packages 
     
     def get_arrivals(self):
         return self.arrival_times
     
+    def get_launch_and_running_time(self):
+        return self.launch_and_running_time
+
     def get_task_num(self):
         return self.task_num
 
     def get_arrival_time(self,Function_ID):
         if Function_ID>self.task_num:
-            return sys.maxsize
+            return float("inf")
         return self.arrival_times[Function_ID-1]
     
     def get_package_info(self,Function_ID):
