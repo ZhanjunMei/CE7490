@@ -10,21 +10,15 @@ from logger import Logger
 numpy.random.seed(0)
 
 
-def main():
-    task_num = 500
-    worker_num = 200
-    worker_th = 50  # threads in each worker
-    max_time = 1000 * 60  # seconds
-    cache_size = 10 * 1024 # KB
-    package_path = './pypi_package_data.csv'
+def run_simulate(
+    logger,
+    workers,
+    tasks,
+    scheduler,
+    max_time=1000 * 60,  # seconds
+):
     
-    logger = Logger("pasch")
-    workers = [Worker(f"worker_{i}", worker_th, logger=logger, cache_size=cache_size) for i in range(worker_num)]
-    Tasks = Functions(num = task_num)
-    mapper = ConsistentHashingWithPowerOfTwoChoices(workers, package_path)
-    scheduler = PASch_Scheduler(Tasks, workers, mapper, logger)
     now_time = 0
-    
     while now_time < max_time:
 
         # get_next_time() from all generators to fine minimum next_time
@@ -46,7 +40,7 @@ def main():
 
     
     #if after the max_time, some tasks have not come yet
-    if Tasks.get_last_arrival_time() >= max_time:
+    if tasks.get_last_arrival_time() >= max_time:
         while scheduler.has_next():
              # get_next_time() from all generators to fine minimum next_time
             min_times = [w.get_next_time() for w in workers]
@@ -78,9 +72,45 @@ def main():
                 w.step(min_time)
             now_time += min_time
 
+            logger.cal_co_var(workers, now_time)
+
     print("finish tasks")
     logger.print_log()
 
 
+def run_simulates():
+    task_num = 2000
+    worker_num = 500
+    worker_th = 100  # threads in each worker
+    max_time = 5 * 60  # seconds
+    cache_size = 1 * 1024 * 1024 # KB
+    package_path = './pypi_package_data.csv'
+    tasks_file = "./tasks_20000.json"
+
+    tasks = Functions(num=task_num, file_name=tasks_file)
+
+    # for pasch
+    logger = Logger("pasch")
+    workers = [Worker(f"worker_{i}", worker_th, logger=logger, cache_size=cache_size) for i in range(worker_num)]
+    
+    mapper = ConsistentHashingWithPowerOfTwoChoices(workers, package_path)
+    scheduler = PASch_Scheduler(tasks, workers, mapper, logger)
+    run_simulate(logger, workers, tasks, scheduler, max_time)
+
+    # for hash
+    logger = Logger("hash")
+    workers = [Worker(f"worker_{i}", worker_th, logger=logger, cache_size=cache_size) for i in range(worker_num)]
+    mapper = ConsistentHashingWithPowerOfTwoChoices(workers, package_path)
+    scheduler = Hashaffinity_Scheduler(tasks, workers, mapper, logger)
+    run_simulate(logger, workers, tasks, scheduler, max_time)
+
+    # for least loaded
+    logger = Logger("leastloaded")
+    workers = [Worker(f"worker_{i}", worker_th, logger=logger, cache_size=cache_size) for i in range(worker_num)]
+    mapper = ConsistentHashingWithPowerOfTwoChoices(workers, package_path)
+    scheduler = Leastloaded_Scheduler(tasks, workers, mapper, logger)
+    run_simulate(logger, workers, tasks, scheduler, max_time)
+
+
 if __name__ == '__main__':
-    main()
+    run_simulates()

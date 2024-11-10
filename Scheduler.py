@@ -54,14 +54,16 @@ class PASch_Scheduler(BaseTimer):
                 
         task = self.tasks.get_package_info(Function_ID)
         arrive_time = self.tasks.get_arrival_time(Function_ID)
+        running_time = self.tasks.get_launch_and_running_time(Function_ID)
         self.logger.task_arrive(Function_ID, arrive_time)
-        self.logger.task_alloc(Function_ID, arrive_time) # same time
+        
         
 
         if final_worker == None:
             return False
         else:
-            final_worker.set_task(task, Function_ID)
+            self.logger.task_alloc(Function_ID, self.abs_time)
+            final_worker.set_task(task, Function_ID, running_time)
             return True
 
     def get_next_time(self):
@@ -124,14 +126,14 @@ class Leastloaded_Scheduler(BaseTimer):
 
         task = self.tasks.get_package_info(Function_ID)
         arrive_time = self.tasks.get_arrival_time(Function_ID)
+        running_time = self.tasks.get_launch_and_running_time(Function_ID)
         self.logger.task_arrive(Function_ID, arrive_time)
-        self.logger.task_alloc(Function_ID, arrive_time) # same time
-        
 
         if final_worker == None:
             return False
         else:
-            final_worker.set_task(task, Function_ID)
+            self.logger.task_alloc(Function_ID, self.abs_time)
+            final_worker.set_task(task, Function_ID, running_time)
             return True
 
     def get_next_time(self):
@@ -207,14 +209,16 @@ class Hashaffinity_Scheduler(BaseTimer):
             
         task = self.tasks.get_package_info(Function_ID)
         arrive_time = self.tasks.get_arrival_time(Function_ID)
+        running_time = self.tasks.get_launch_and_running_time(Function_ID)
         self.logger.task_arrive(Function_ID, arrive_time)
-        self.logger.task_alloc(Function_ID, arrive_time) # same time
+        
         
 
         if final_worker == None:
             return False
         else:
-            final_worker.set_task(task, Function_ID)
+            self.logger.task_alloc(Function_ID, self.abs_time)
+            final_worker.set_task(task, Function_ID, running_time)
             return True
 
     def get_next_time(self):

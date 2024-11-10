@@ -1,5 +1,3 @@
-import numpy as np
-from enum import Enum
 import math
 import sys
 
@@ -23,12 +21,12 @@ class WorkerThread(BaseTimer):
         self.required_pkgs = []
         self.loading_idx = 0
         self.tid = 0
+        self.running_time = 0
 
         
     def _prepare_loading_ch_state(self):
         if not self.state == "PREPARE_LOADING":
             return
-        exe_mean_time = 0.1
         while self.loading_idx < len(self.required_pkgs):
             pkg_name = self.required_pkgs[self.loading_idx]["name"]
             if not self.worker.has_cached_pkg(pkg_name):
@@ -44,7 +42,7 @@ class WorkerThread(BaseTimer):
             if len(self.required_pkgs) == 0:
                 self.remain_time = 1
             else:
-                self.remain_time = float(np.random.exponential(1 / exe_mean_time, 1))
+                self.remain_time = self.running_time
 
 
     def get_next_time(self):
@@ -103,7 +101,7 @@ class WorkerThread(BaseTimer):
         self.abs_time += time_step
     
     
-    def set_task(self, pkgs, fid):
+    def set_task(self, pkgs, fid, running_time):
         """
             pkgs = [
                 {
@@ -121,6 +119,7 @@ class WorkerThread(BaseTimer):
         self.required_pkgs = pkgs
         self.loading_idx = 0
         self.tid = fid
+        self.running_time = running_time
 
 
 class Worker(BaseTimer):
@@ -192,7 +191,6 @@ class Worker(BaseTimer):
         self.cached_pkgs.append({"name": pkg_name, "size": pkg_size})
         
 
-
     def step(self, time_step):
         for t in self.threads:
             t.step(time_step)
@@ -200,11 +198,11 @@ class Worker(BaseTimer):
         self.abs_time += time_step
     
 
-    def set_task(self, pkgs, fid):
+    def set_task(self, pkgs, fid, running_time):
         assigned = False
         for t in self.threads:
             if t.state == "FREE":
-                t.set_task(pkgs, fid)
+                t.set_task(pkgs, fid, running_time)
                 assigned = True
                 break
 

@@ -1,17 +1,18 @@
 import numpy as np
 import random
 import csv
-import sys
+import json
 
 def arrival_generator(mean_interarrival_time=0.1, num_events=10):
     interarrival_times = np.random.exponential(scale=mean_interarrival_time, size=num_events)
     arrival_times = np.cumsum(interarrival_times)
+    arrival_times = [float(a) for a in arrival_times]
     return arrival_times
 
 def running_time_generator(mean=0.1, num_tasks=10):
     running_times = np.random.exponential(scale=mean, size=num_tasks)
     #plus 1s launching time
-    return [a+1 for a in running_times]
+    return [float(a+1) for a in running_times]
 
 # 读取 CSV 文件并访问数据
 def read_package_data_from_csv(filename="pypi_package_data.csv"):
@@ -57,9 +58,9 @@ def package_generator(num_tasks, package_path = "./pypi_package_data.csv"):
             # 添加包信息到任务
             task_packages.append({
                 "name": package_name,
-                "size": package_size,
-                "import_time": import_time,
-                "popularity": _
+                "size": float(package_size),
+                "import_time": float(import_time),
+                "popularity": int(_)
             })
         
         # 将任务包信息添加到任务列表中
@@ -71,11 +72,38 @@ def package_generator(num_tasks, package_path = "./pypi_package_data.csv"):
 
 
 class Functions:
-    def __init__(self,num):
-        self.arrival_times = arrival_generator(mean_interarrival_time=0.1, num_events=num)
-        self.packages = package_generator(num_tasks=num)
-        self.launch_and_running_time = running_time_generator(mean = 0.1,num_tasks=num)
-        self.task_num = num
+    def __init__(self, num=None, file_name=None):
+        if file_name is None:
+            self.arrival_times = arrival_generator(mean_interarrival_time=0.1, num_events=num)
+            self.packages = package_generator(num_tasks=num)
+            self.launch_and_running_time = running_time_generator(mean = 0.1,num_tasks=num)
+            self.task_num = num
+            
+            list_tasks = []
+            for i in range(self.task_num):
+                t = {
+                    "id": i + 1,
+                    "arrive_time": self.arrival_times[i],
+                    "run_time": self.launch_and_running_time[i],
+                    "pkgs": self.packages[i]
+                }
+                list_tasks.append(t)
+            with open(f"tasks_{num}.json", "w", encoding="utf-8") as file_name:
+                json.dump(list_tasks, file_name, ensure_ascii=False, indent=4)
+        else:
+            with open(file_name, "r", encoding="utf-8") as f:
+                list_tasks = json.load(f)
+            if num is None:
+                num = len(list_tasks)
+            else:
+                num = min(len(list_tasks), num)
+            self.arrival_times = [list_tasks[i]["arrive_time"] for i in range(num)]
+            self.packages = [list_tasks[i]["pkgs"] for i in range(num)]
+            self.launch_and_running_time = [list_tasks[i]["run_time"] for i in range(num)]
+            self.task_num = num
+        
+        print("generate tasks finished")
+        
     
     def get_last_arrival_time(self):
         return self.arrival_times[self.task_num-1]
@@ -86,8 +114,8 @@ class Functions:
     def get_arrivals(self):
         return self.arrival_times
     
-    def get_launch_and_running_time(self):
-        return self.launch_and_running_time
+    def get_launch_and_running_time(self, Function_ID):
+        return self.launch_and_running_time[Function_ID - 1]
 
     def get_task_num(self):
         return self.task_num

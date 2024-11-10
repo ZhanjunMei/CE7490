@@ -1,5 +1,7 @@
 import numpy as np
 import csv
+import os
+
 
 class Logger():
     
@@ -28,6 +30,8 @@ class Logger():
     def cal_co_var(self, workers, t):
         tasks = [w.get_load() for w in workers]
         np_arr = np.array(tasks)
+        if np.all(np_arr == 0):
+            return
         mu = np.mean(np_arr)
         sigma = np.std(np_arr, ddof=1)
         self.co_var_t.append(t)
@@ -49,16 +53,23 @@ class Logger():
         
 
     def print_log(self):
-        print("========== log ==========")
+        if not os.path.exists("./logs"):
+            os.makedirs("./logs")
+
+        log_strs = []
+        log_strs.append("========== log ==========")
         
-        print("--- hit rate ---")
-        print(f"pkgs: {self.pkg_num}, cached: {self.cached_pkg_num}, \
-              rate: {self.cached_pkg_num / self.pkg_num}")
+        # calculate hit rate
+        log_strs.append("--- hit rate ---")
+        log_strs.append(f"pkgs: {self.pkg_num}, cached: {self.cached_pkg_num}, \
+            rate: {self.cached_pkg_num / self.pkg_num}")
         
-        print("--- coefficient of variation ---")
+        # calculate coefficient of variation
+        log_strs.append("--- coefficient of variation ---")
         vals = [self.co_var_sigma[i] / self.co_var_mu[i] for i in range(len(self.co_var_t))]
-        print(f"co_val mean: {float(np.mean(vals))}")
-        with open(f"{self.name}_coval.csv", mode="w", newline="") as f:
+        log_strs.append(f"co_val mean: {float(np.mean(vals))}")
+
+        with open(f"logs/{self.name}_coval.csv", mode="w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["abs_time", "mu", "sigma", "value"])
             for i in range(len(self.co_var_t)):
@@ -67,10 +78,12 @@ class Logger():
                 t = self.co_var_t[i]
                 writer.writerow([t, mu, sigma, sigma / mu])
 
-        print("--- finish time ---")
+        # calculate finish time
+        log_strs.append("--- finish time ---")
         vals = [v["finish"] - v["arrive"] for v in self.tasks.values()]
-        print(f"finish mean time: {float(np.mean(vals))} s")
-        with open(f"{self.name}_finishtime.csv", mode="w", newline="") as f:
+        log_strs.append(f"finish mean time: {float(np.mean(vals))} s")
+
+        with open(f"logs/{self.name}_finishtime.csv", mode="w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["id", "arrive", "finish", "value"])
             for k in self.tasks.keys():
@@ -78,6 +91,14 @@ class Logger():
                 finish_t = self.tasks[k]["finish"]
                 writer.writerow([k, arrive_t, finish_t, finish_t - arrive_t])
     
+        # print simple log
+        for s in log_strs:
+            print(s)
+
+        with open(f"logs/{self.name}_log.txt", "w") as f:
+            for s in log_strs:
+                f.write(s + "\n")
+
 
     def log_info(self,
         subject,

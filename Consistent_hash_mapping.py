@@ -5,7 +5,7 @@ from Data_Generator import read_package_data_from_csv
 
 def hash_fn(key, salt=""):
     """使用标准哈希函数将 key + salt 映射到哈希环上的一个点。"""
-    return int(hashlib.md5((key + salt).encode()).hexdigest(), 16) % 360
+    return int(hashlib.md5((key + salt).encode()).hexdigest(), 16) % 1000000
 
 
 
