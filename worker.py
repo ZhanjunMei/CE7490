@@ -157,6 +157,8 @@ class Worker(BaseTimer):
 
     
     def add_cache_pkg(self, pkg_name, pkg_size):
+        if self.has_cached_pkg(pkg_name):
+            return
         cached_size = 0
         for pkg in self.cached_pkgs:
             cached_size += pkg["size"]
