@@ -44,7 +44,7 @@ class ConsistentHashingWithPowerOfTwoChoices:
     def _find_two_closest_workers(self, package_name):
         """找到指定包最近的两个 worker 节点，一个使用原始名称，一个使用加盐名称。"""
         point1 = hash_fn(package_name)              # 使用原始名称哈希
-        salt = str(random.randint(0, 10000))        # 加盐
+        salt = "salt"                               # 加盐
         point2 = hash_fn(package_name, salt)        # 使用加盐哈希
 
         # 找到两个不同的 worker 节点

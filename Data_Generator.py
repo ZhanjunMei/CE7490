@@ -88,7 +88,7 @@ class Functions:
                     "pkgs": self.packages[i]
                 }
                 list_tasks.append(t)
-            with open(f"tasks_{num}_{name}.json", "w", encoding="utf-8") as file_name:
+            with open(f"tasks_{name}.json", "w", encoding="utf-8") as file_name:
                 json.dump(list_tasks, file_name, ensure_ascii=False, indent=4)
         else:
             with open(file_name, "r", encoding="utf-8") as f:
