@@ -43,8 +43,12 @@ class Logger():
 
 
     def task_arrive(self, task_id, t):
-        entry = {"arrive": t, "alloc": float("inf"), "finish": float("inf")}
+        entry = {"arrive": t, "alloc": float("inf"), "load": float("inf"), "finish": float("inf")}
         self.tasks[str(task_id)] = entry
+
+    
+    def task_load(self, task_id, t):
+        self.tasks[str(task_id)]["load"] = t
 
     
     def task_alloc(self, task_id, t):
@@ -88,12 +92,13 @@ class Logger():
 
         with open(f"{self.dir}/{self.name}_finishtime.csv", mode="w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["id", "arrive", "alloc", "finish", "value"])
+            writer.writerow(["id", "arrive", "alloc", "load", "finish", "value"])
             for k in self.tasks.keys():
                 arrive_t = self.tasks[k]["arrive"]
                 alloc_t = self.tasks[k]["alloc"]
+                load_t = self.tasks[k]["load"]
                 finish_t = self.tasks[k]["finish"]
-                writer.writerow([k, arrive_t, alloc_t, finish_t, finish_t - arrive_t])
+                writer.writerow([k, arrive_t, alloc_t, load_t, finish_t, finish_t - arrive_t])
     
         # print simple log
         for s in log_strs:

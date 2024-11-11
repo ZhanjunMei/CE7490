@@ -12,15 +12,15 @@ class WorkerThread(BaseTimer):
             loading_idx: useful only in PREPARE_LOADING and LOADING
         """
         self.worker = worker
-        self.t_id = t_id
+        self.t_id = t_id  # thread id
         self.logger = logger
         
         self.state = "FREE"
         self.abs_time = 0
         self.remain_time = float("inf")
         self.required_pkgs = []
-        self.loading_idx = 0
-        self.tid = 0
+        self.loading_idx = 0  # next pkg to be loaded
+        self.tid = 0  # task id
         self.running_time = 0
 
         
@@ -34,8 +34,9 @@ class WorkerThread(BaseTimer):
         if self.loading_idx < len(self.required_pkgs):
             self.remain_time = self.required_pkgs[self.loading_idx]["import_time"]
             self.state = "LOADING"
-        # all pkgs are cached, ready to execute
+        # all pkgs are loaded (and cached), ready to execute
         else:
+            self.logger.task_load(self.tid, self.abs_time)
             self.state = "WORKING"
             if len(self.required_pkgs) == 0:
                 self.remain_time = 1
@@ -48,6 +49,8 @@ class WorkerThread(BaseTimer):
 
     
     def step(self, time_step):
+        self.abs_time += time_step
+
         if self.state == "FREE":
             pass
         
@@ -67,7 +70,7 @@ class WorkerThread(BaseTimer):
             if time_step < self.remain_time:
                 self.remain_time -= time_step
             elif math.fabs(time_step - self.remain_time) < 1e-6:
-                finish_time = self.abs_time + time_step
+                finish_time = self.abs_time
                 self.logger.task_finish(self.tid, finish_time)
                 print(f"{self.worker.name}_t_{self.t_id} finished work {self.tid} at {finish_time}")
                 self.state = "FREE"
@@ -76,7 +79,7 @@ class WorkerThread(BaseTimer):
                 print("[WorkerThread] step error: time_step greater than exe_time")
                 sys.exit(1)
         
-        self.abs_time += time_step
+        
     
     
     def set_task(self, pkgs, fid, running_time):
