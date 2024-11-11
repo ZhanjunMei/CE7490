@@ -92,5 +92,3 @@ if __name__ == '__main__':
                 run_simulates(f"log_{i}", task_num, worker_num, worker_th, cache_size)
                 i += 1
             
-    
-    run_simulates()
