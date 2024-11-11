@@ -47,10 +47,10 @@ def save_package_data_to_csv(package_data, filename="pypi_package_data.csv"):
             writer.writerow(pkg)
 
 # 获取 1000 个包的名称和平均大小（单位 KB）
-package_data = get_pypi_package_data(1000)
+package_data = get_pypi_package_data(10000)
 
 # 保存数据到当前目录的文件
-save_package_data_to_csv(package_data)
+save_package_data_to_csv(package_data, filename="pypi_package_data_1.csv")
 
 print(f"Package data saved to 'pypi_package_data.csv'")
 

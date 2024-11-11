@@ -17,7 +17,7 @@ class WorkerThread(BaseTimer):
         
         self.state = "FREE"
         self.abs_time = 0
-        self.remain_time = 0
+        self.remain_time = float("inf")
         self.required_pkgs = []
         self.loading_idx = 0
         self.tid = 0
@@ -25,8 +25,6 @@ class WorkerThread(BaseTimer):
 
         
     def _prepare_loading_ch_state(self):
-        if not self.state == "PREPARE_LOADING":
-            return
         while self.loading_idx < len(self.required_pkgs):
             pkg_name = self.required_pkgs[self.loading_idx]["name"]
             if not self.worker.has_cached_pkg(pkg_name):
@@ -46,32 +44,12 @@ class WorkerThread(BaseTimer):
 
 
     def get_next_time(self):
-        
-        if self.state == "FREE":
-            self.remain_time = float("inf")
-        
-        elif self.state == "PREPARE_LOADING":
-            self._prepare_loading_ch_state()
-
-        elif self.state == "LOADING" or self.state == "WORKING":
-            pass
-
         return self.remain_time
 
     
     def step(self, time_step):
         if self.state == "FREE":
             pass
-        
-        elif self.state == "PREPARE_LOADING":
-            if time_step < self.remain_time:
-                self.remain_time -= time_step
-                self.state = "LOADING"
-            elif math.fabs(time_step - self.remain_time) < 1e-6:
-                self._prepare_loading_ch_state()
-            else:
-                print("[WorkerThread] step error: time_step greater than exe_time")
-                sys.exit(1)
         
         elif self.state == "LOADING":
             if time_step < self.remain_time:
@@ -80,7 +58,6 @@ class WorkerThread(BaseTimer):
                 loaded_pkg = self.required_pkgs[self.loading_idx]
                 self.worker.add_cache_pkg(loaded_pkg["name"], loaded_pkg["size"])
                 self.loading_idx += 1
-                self.state = "PREPARE_LOADING"
                 self._prepare_loading_ch_state()
             else:
                 print("[WorkerThread] step error: time_step greater than exe_time")
@@ -94,6 +71,7 @@ class WorkerThread(BaseTimer):
                 self.logger.task_finish(self.tid, finish_time)
                 print(f"{self.worker.name}_t_{self.t_id} finished work {self.tid} at {finish_time}")
                 self.state = "FREE"
+                self.remain_time = float("inf")
             else:
                 print("[WorkerThread] step error: time_step greater than exe_time")
                 sys.exit(1)
@@ -115,11 +93,12 @@ class WorkerThread(BaseTimer):
         if self.state != "FREE":
             print("[WorkerThread] set task failed: assign a task to an occupied thread")
             return
-        self.state = "PREPARE_LOADING"
+        
         self.required_pkgs = pkgs
         self.loading_idx = 0
         self.tid = fid
         self.running_time = running_time
+        self._prepare_loading_ch_state()
 
 
 class Worker(BaseTimer):

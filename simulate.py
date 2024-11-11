@@ -79,15 +79,15 @@ def run_simulate(
 
 
 def run_simulates():
-    task_num = 2000
-    worker_num = 500
+    task_num = 20000
+    worker_num = 1000
     worker_th = 100  # threads in each worker
-    max_time = 5 * 60  # seconds
-    cache_size = 1 * 1024 * 1024 # KB
-    package_path = './pypi_package_data.csv'
-    tasks_file = "./tasks_20000.json"
+    max_time = 30 * 60  # seconds
+    cache_size = 500 * 1024 # KB
+    package_path = './pypi_package_data_1.csv'
+    tasks_file = "./tasks_20000_1.json"
 
-    tasks = Functions(num=task_num, file_name=tasks_file)
+    tasks = Functions(file_name=tasks_file)
 
     # for pasch
     logger = Logger("pasch")

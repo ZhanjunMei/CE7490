@@ -72,10 +72,10 @@ def package_generator(num_tasks, package_path = "./pypi_package_data.csv"):
 
 
 class Functions:
-    def __init__(self, num=None, file_name=None):
+    def __init__(self, num=None, file_name=None, pkg_path="./pypi_package_data_1.csv", name=""):
         if file_name is None:
             self.arrival_times = arrival_generator(mean_interarrival_time=0.1, num_events=num)
-            self.packages = package_generator(num_tasks=num)
+            self.packages = package_generator(num_tasks=num, package_path=pkg_path)
             self.launch_and_running_time = running_time_generator(mean = 0.1,num_tasks=num)
             self.task_num = num
             
@@ -88,7 +88,7 @@ class Functions:
                     "pkgs": self.packages[i]
                 }
                 list_tasks.append(t)
-            with open(f"tasks_{num}.json", "w", encoding="utf-8") as file_name:
+            with open(f"tasks_{num}_{name}.json", "w", encoding="utf-8") as file_name:
                 json.dump(list_tasks, file_name, ensure_ascii=False, indent=4)
         else:
             with open(file_name, "r", encoding="utf-8") as f:
