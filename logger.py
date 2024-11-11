@@ -85,10 +85,12 @@ class Logger():
                 t = self.co_var_t[i]
                 writer.writerow([t, mu, sigma, sigma / mu])
 
-        # calculate finish time
+        # calculate finish time and execution time
         log_strs.append("--- finish time ---")
         vals = [v["finish"] - v["arrive"] for v in self.tasks.values()]
         log_strs.append(f"finish mean time: {float(np.mean(vals))} s")
+        vals = [v["finish"] - v["alloc"] for v in self.tasks.values()]
+        log_strs.append(f"work mean time: {float(np.mean(vals))} s")
 
         with open(f"{self.dir}/{self.name}_finishtime.csv", mode="w", newline="") as f:
             writer = csv.writer(f)
