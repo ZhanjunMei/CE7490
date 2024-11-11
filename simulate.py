@@ -43,32 +43,40 @@ def run_simulate(
     logger.print_log()
 
 
-def run_simulates():
-    task_num = 2000
-    worker_num = 10
-    worker_th = 10  # threads in each worker
-    cache_size = 50 * 1024 # KB
+def run_simulates(
+    log_dir,
+    task_num = 2000,
+    worker_num = 10,
+    worker_th = 10,  # threads in each worker
+    cache_size = 50 * 1024, # KB
+):
     package_path = './pypi_package_data_1.csv'
     tasks_file = "./tasks_20000_1.json"
+    params = {
+        "task_num": task_num,
+        "worker_num": worker_num,
+        "worker_th": worker_th,
+        "cache_size": cache_size,
+    }
 
     tasks = Functions(num=task_num, file_name=tasks_file)
 
     # for pasch
-    logger = Logger("pasch")
+    logger = Logger(name="pasch", params=params, dir=log_dir)
     workers = [Worker(f"worker_{i}", worker_th, logger=logger, cache_size=cache_size) for i in range(worker_num)]
     mapper = ConsistentHashingWithPowerOfTwoChoices(workers, package_path)
     scheduler = PASch_Scheduler(tasks, workers, mapper, logger)
     run_simulate(logger, workers, scheduler)
 
     # for hash
-    logger = Logger("hash")
+    logger = Logger("hash", params=params, dir=log_dir)
     workers = [Worker(f"worker_{i}", worker_th, logger=logger, cache_size=cache_size) for i in range(worker_num)]
     mapper = ConsistentHashingWithPowerOfTwoChoices(workers, package_path)
     scheduler = Hashaffinity_Scheduler(tasks, workers, mapper, logger)
     run_simulate(logger, workers, scheduler)
 
     # for least loaded
-    logger = Logger("leastloaded")
+    logger = Logger("leastloaded", params=params, dir=log_dir)
     workers = [Worker(f"worker_{i}", worker_th, logger=logger, cache_size=cache_size) for i in range(worker_num)]
     mapper = ConsistentHashingWithPowerOfTwoChoices(workers, package_path)
     scheduler = Leastloaded_Scheduler(tasks, workers, mapper, logger)
@@ -76,4 +84,13 @@ def run_simulates():
 
 
 if __name__ == '__main__':
+    i = 0
+    task_num = 2000
+    for worker_num in [10, 50, 100]:
+        for worker_th in [1, 5, 10]:
+            for cache_size in [1 * 1024, 10 * 1024, 50 * 1024]:
+                run_simulates(f"log_{i}", task_num, worker_num, worker_th, cache_size)
+                i += 1
+            
+    
     run_simulates()

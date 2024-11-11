@@ -1,12 +1,15 @@
 import numpy as np
 import csv
 import os
+import json
 
 
 class Logger():
     
-    def __init__(self, name):
+    def __init__(self, name, params, dir):
         self.name = name
+        self.params = params
+        self.dir = "./logs/" + dir
         self.logs = []
         # for hit rate
         self.pkg_num = 0
@@ -53,8 +56,8 @@ class Logger():
         
 
     def print_log(self):
-        if not os.path.exists("./logs"):
-            os.makedirs("./logs")
+        if not os.path.exists(self.dir):
+            os.makedirs(self.dir)
 
         log_strs = []
         log_strs.append("========== log ==========")
@@ -69,7 +72,7 @@ class Logger():
         vals = [self.co_var_sigma[i] / self.co_var_mu[i] for i in range(len(self.co_var_t))]
         log_strs.append(f"co_val mean: {float(np.mean(vals))}")
 
-        with open(f"logs/{self.name}_coval.csv", mode="w", newline="") as f:
+        with open(f"{self.dir}/{self.name}_coval.csv", mode="w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["abs_time", "mu", "sigma", "value"])
             for i in range(len(self.co_var_t)):
@@ -83,7 +86,7 @@ class Logger():
         vals = [v["finish"] - v["arrive"] for v in self.tasks.values()]
         log_strs.append(f"finish mean time: {float(np.mean(vals))} s")
 
-        with open(f"logs/{self.name}_finishtime.csv", mode="w", newline="") as f:
+        with open(f"{self.dir}/{self.name}_finishtime.csv", mode="w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["id", "arrive", "alloc", "finish", "value"])
             for k in self.tasks.keys():
@@ -96,9 +99,12 @@ class Logger():
         for s in log_strs:
             print(s)
 
-        with open(f"logs/{self.name}_log.txt", "w") as f:
+        with open(f"{self.dir}/{self.name}_log.txt", "w") as f:
             for s in log_strs:
                 f.write(s + "\n")
+                
+        with open(f"{self.dir}/{self.name}_params.json", "w") as f:
+            json.dump(self.params, f, indent=4)
 
 
     def log_info(self,
