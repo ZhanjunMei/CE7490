@@ -83,7 +83,7 @@ class PASch_Scheduler(BaseTimer):
 
 
     def has_next(self):
-        return self.task_finished + 1 < len(self.tasks.get_packages())
+        return self.task_finished + 1 <= len(self.tasks.get_packages())
 
 
     def step(self, time_step):
@@ -153,7 +153,7 @@ class Leastloaded_Scheduler(BaseTimer):
 
 
     def has_next(self):
-        return self.task_finished + 1 < len(self.tasks.get_packages())
+        return self.task_finished + 1 <= len(self.tasks.get_packages())
 
 
     def step(self, time_step):
@@ -238,7 +238,7 @@ class Hashaffinity_Scheduler(BaseTimer):
 
 
     def has_next(self):
-        return self.task_finished + 1 < len(self.tasks.get_packages())
+        return self.task_finished + 1 <= len(self.tasks.get_packages())
 
 
     def step(self, time_step):

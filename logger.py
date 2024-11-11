@@ -85,11 +85,12 @@ class Logger():
 
         with open(f"logs/{self.name}_finishtime.csv", mode="w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["id", "arrive", "finish", "value"])
+            writer.writerow(["id", "arrive", "alloc", "finish", "value"])
             for k in self.tasks.keys():
                 arrive_t = self.tasks[k]["arrive"]
+                alloc_t = self.tasks[k]["alloc"]
                 finish_t = self.tasks[k]["finish"]
-                writer.writerow([k, arrive_t, finish_t, finish_t - arrive_t])
+                writer.writerow([k, arrive_t, alloc_t, finish_t, finish_t - arrive_t])
     
         # print simple log
         for s in log_strs:
