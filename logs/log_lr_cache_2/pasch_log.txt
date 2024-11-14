@@ -1,0 +1,8 @@
+========== log ==========
+--- hit rate ---
+pkgs: 10331, cached: 1905,             rate: 0.18439647662375375
+--- coefficient of variation ---
+co_val mean: 1.1907136744335118
+--- finish time ---
+finish mean time: 12.402797161550897 s
+work mean time: 12.402797161550897 s

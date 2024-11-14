@@ -83,12 +83,19 @@ def run_simulates(
     run_simulate(logger, workers, scheduler)
 
 
+def run_base():
+    task_num = 3000
+    worker_num = 100
+    worker_th = 10
+    cache_size = 50 * 1024
+    run_simulates(f"log_main", task_num, worker_num, worker_th, cache_size)
+
+
 if __name__ == '__main__':
-    i = 0
-    task_num = 2000
-    for worker_num in [10, 50, 100]:
-        for worker_th in [1, 5, 10]:
-            for cache_size in [1 * 1024, 10 * 1024, 50 * 1024]:
-                run_simulates(f"log_{i}", task_num, worker_num, worker_th, cache_size)
-                i += 1
+    task_num = 3000
+    worker_num = 100
+    worker_th = 10
+    cache_size = 0
+    run_simulates(f"log_main_0cache", task_num, worker_num, worker_th, cache_size)
+
             
