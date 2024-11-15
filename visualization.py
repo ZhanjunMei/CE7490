@@ -3,6 +3,51 @@ import numpy as np
 import pandas as pd
 
 
+def draw_hr_c_new():
+    x = [0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500]
+    pasch_1_y = [0.009486, 0.0502, 0.0708, 0.163, 0.19775, 0.2838, 0.3253, 0.3798, 0.43278, 0.43529]
+    pasch_y = [0.009389, 0.05091, 0.07492, 0.1595, 0.1843, 0.2593, 0.2980, 0.3598, 0.36743, 0.3670]
+    plt.plot(x, pasch_1_y, label='pasch_1')
+    plt.plot(x, pasch_y, label='pasch')
+    plt.xlabel('cache memory (MB)')
+    plt.ylabel('hit rate')
+    plt.xscale('log')
+    plt.xticks(x, [f'{xi}' for xi in x])
+    plt.title("Hit rate of pasch_1 and pasch")
+    plt.legend()
+    plt.savefig("hr_c_new.jpg")
+
+
+def draw_cv_c_new():
+    x = [0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500]
+    pasch_1_y = [1.4362, 1.47255, 1.48395, 1.5501, 1.56286, 1.58879, 1.5644, 1.6201, 1.620455, 1.6084]
+    pasch_y = [1.0900, 1.12613, 1.14157, 1.17646, 1.18561, 1.207, 1.2278, 1.17326, 1.16959, 1.1727]
+    plt.plot(x, pasch_1_y, label='pasch_1')
+    plt.plot(x, pasch_y, label='pasch')
+    plt.xlabel('cache memory (MB)')
+    plt.ylabel('coefficient of variation')
+    plt.xscale('log')
+    plt.xticks(x, [f'{xi}' for xi in x])
+    plt.title("Coefficient of variation of pasch_1 and pasch")
+    plt.legend()
+    plt.savefig("cv_c_new.jpg")
+
+
+def draw_fin_t_c_new():
+    x = [0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500]
+    pasch_1_y = [14.8315, 14.3103, 14.0248, 12.727, 12.2262, 10.97065, 10.3769, 9.5765, 8.83305, 8.78114]
+    pasch_y = [14.8204, 14.28102, 13.9575, 12.8145, 12.4442, 11.3618, 10.854, 9.92793, 9.75384, 9.7831]
+    plt.plot(x, pasch_1_y, label='pasch_1')
+    plt.plot(x, pasch_y, label='pasch')
+    plt.xlabel('cache memory (MB)')
+    plt.ylabel('averate finish time (s)')
+    plt.xscale('log')
+    plt.xticks(x, [f'{xi}' for xi in x])
+    plt.title("Average finish time of pasch_1 and pasch")
+    plt.legend()
+    plt.savefig("fin_t_c_new.jpg")
+
+
 def draw_fin_t_cache():
     x = [0.5, 1, 5, 10, 50, 100, 500]
     least_y = [14.47, 14.356, 13.883, 13.532, 12.789, 12.545, 12.617]

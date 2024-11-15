@@ -198,7 +198,37 @@ class PASch_Scheduler_2(PASch_Scheduler):
             final_worker.set_task(task, Function_ID, running_time)
             return True
 
+class PASch_Scheduler_3(PASch_Scheduler):
+    def __init__(self, tasks, workers, mapper, logger):
+        super().__init__(tasks, workers, mapper, logger)
 
+    def get_affinity_worker(self, package_name):
+        return self.mapper._find_closest_worker_byname(package_name)
+
+    def allocate(self, Function_ID):
+
+        package_name = self.tasks.get_largest_package_info(Function_ID)["name"]
+        worker_name = self.get_affinity_worker(package_name)
+        worker = None
+        for w in self.workers:
+            if w.get_name() == worker_name and not w.is_overload():
+                worker = w
+                break
+        if worker is None:
+            worker = self.find_least_loaded_worker()
+                
+        task = self.tasks.get_package_info(Function_ID)
+        arrive_time = self.tasks.get_arrival_time(Function_ID)
+        running_time = self.tasks.get_launch_and_running_time(Function_ID)
+        self.logger.task_arrive(Function_ID, arrive_time)
+        
+        if worker is None:
+            return False
+        else:
+            self.logger.task_alloc(Function_ID, self.abs_time)
+            worker.set_task(task, Function_ID, running_time)
+            return True
+    
 
 class Leastloaded_Scheduler(BaseTimer):
     def __init__(self,tasks,workers,mapper,logger):

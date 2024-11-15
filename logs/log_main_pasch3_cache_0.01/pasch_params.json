@@ -1,0 +1,6 @@
+{
+    "task_num": 3000,
+    "worker_num": 100,
+    "worker_th": 10,
+    "cache_size": 51200
+}
