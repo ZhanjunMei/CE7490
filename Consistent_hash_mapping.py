@@ -22,6 +22,8 @@ class ConsistentHashingWithPowerOfTwoChoices:
         self._init_worker_points()
         self._init_package_points()
 
+        self.salts = [f"salt_{i}" for i in range(len(workers))]
+
     def _init_worker_points(self):
         """将所有 worker 节点映射到哈希环上，确保每个 worker 的哈希值唯一。"""
         for worker in self.workers:
@@ -40,6 +42,26 @@ class ConsistentHashingWithPowerOfTwoChoices:
             self.package_points[package[0]] = point
         # 按位置排序，以便顺时针查找最近的 worker
         self.package_points = dict(sorted(self.package_points.items(), key=lambda x: x[1]))
+
+
+    def _find_closest_workers(self, pkg_name, n):
+        worker_names = set()
+        workers = []
+        for i in range(n):
+            if i >= len(self.workers):
+                break
+            salt = self.salts[i]
+            point_i = hash_fn(pkg_name, salt)
+            worker = self._find_closest_worker(point_i)
+            while worker in worker_names:
+                salt = str(random.randint(0, 10000))
+                point_i = hash_fn(pkg_name, salt)
+                worker = self._find_closest_worker(point_i)
+            workers.append(worker)
+        while len(workers) < n:
+            workers.append(None)
+        return workers
+
 
     def _find_two_closest_workers(self, package_name):
         """找到指定包最近的两个 worker 节点，一个使用原始名称，一个使用加盐名称。"""

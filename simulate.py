@@ -2,7 +2,7 @@ import numpy
 import math
 import sys
 from Data_Generator import Functions
-from Scheduler import PASch_Scheduler,Hashaffinity_Scheduler,Leastloaded_Scheduler
+from Scheduler import PASch_Scheduler,Hashaffinity_Scheduler,Leastloaded_Scheduler, PASch_Scheduler_1, PASch_Scheduler_2
 from Consistent_hash_mapping import ConsistentHashingWithPowerOfTwoChoices
 from worker import Worker
 from logger import Logger
@@ -91,11 +91,59 @@ def run_base():
     run_simulates(f"log_main", task_num, worker_num, worker_th, cache_size)
 
 
-if __name__ == '__main__':
+def run_mw():
     task_num = 3000
     worker_num = 100
     worker_th = 10
-    cache_size = 0
-    run_simulates(f"log_main_0cache", task_num, worker_num, worker_th, cache_size)
+    cache_size = 50 * 1024
+    for n in [1, 2, 3, 5, 7, 9]:
+        log_dir = f"log_main_mw_{n}"
 
-            
+        package_path = './pypi_package_data_1.csv'
+        tasks_file = "./tasks_1_pop1.1.json"
+        params = {
+            "task_num": task_num,
+            "worker_num": worker_num,
+            "worker_th": worker_th,
+            "cache_size": cache_size,
+        }
+
+        tasks = Functions(num=task_num, file_name=tasks_file)
+
+        # for pasch
+        logger = Logger(name="pasch", params=params, dir=log_dir)
+        workers = [Worker(f"worker_{i}", worker_th, logger=logger, cache_size=cache_size) for i in range(worker_num)]
+        mapper = ConsistentHashingWithPowerOfTwoChoices(workers, package_path)
+        scheduler = PASch_Scheduler_1(tasks, workers, mapper, logger, n)
+        run_simulate(logger, workers, scheduler)
+
+
+def run_mp():
+    task_num = 3000
+    worker_num = 100
+    worker_th = 10
+    cache_size = 50 * 1024
+    for n in [1, 2, 3, 4, 5]:
+        log_dir = f"log_main_mp_{n}"
+
+        package_path = './pypi_package_data_1.csv'
+        tasks_file = "./tasks_1_pop1.1.json"
+        params = {
+            "task_num": task_num,
+            "worker_num": worker_num,
+            "worker_th": worker_th,
+            "cache_size": cache_size,
+        }
+
+        tasks = Functions(num=task_num, file_name=tasks_file)
+
+        # for pasch
+        logger = Logger(name="pasch", params=params, dir=log_dir)
+        workers = [Worker(f"worker_{i}", worker_th, logger=logger, cache_size=cache_size) for i in range(worker_num)]
+        mapper = ConsistentHashingWithPowerOfTwoChoices(workers, package_path)
+        scheduler = PASch_Scheduler_2(tasks, workers, mapper, logger, n)
+        run_simulate(logger, workers, scheduler)
+
+
+if __name__ == '__main__':
+    run_mp()
