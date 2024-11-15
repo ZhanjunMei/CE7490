@@ -3,6 +3,99 @@ import numpy as np
 import pandas as pd
 
 
+def draw_fin_t_w_new():
+    x = [2, 5, 10, 20, 50, 100, 200, 500]
+    pasch_1_y, pasch_y = [], []
+    for w in x:
+        dir = f"./logs/log_main_pasch3_w_{w}/"
+        fname = dir + "pasch_1_log.txt"
+        with open(fname, "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                if "finish mean time: " in line:
+                    begin = line.find("finish mean time: ") + len("finish mean time: ")
+                    num = float(line[begin:].replace(" s", ""))
+                    pasch_1_y.append(num)
+        fname = dir + "pasch_log.txt"
+        with open(fname, "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                if "finish mean time: " in line:
+                    begin = line.find("finish mean time: ") + len("finish mean time: ")
+                    num = float(line[begin:].replace(" s", ""))
+                    pasch_y.append(num)
+    plt.plot(x, pasch_1_y, label='pasch_1')
+    plt.plot(x, pasch_y, label='pasch')
+    plt.xlabel('number of workers')
+    plt.ylabel('averate finish time (s)')
+    plt.yscale('log', )
+    plt.title("Average finish time of pasch_1 and pasch")
+    plt.legend()
+    plt.savefig("fin_t_w_new.jpg")
+
+draw_fin_t_w_new()
+
+
+def draw_cv_w_new():
+    x = [2, 5, 10, 20, 50, 100, 200, 500]
+    pasch_1_y, pasch_y = [], []
+    for w in x:
+        dir = f"./logs/log_main_pasch3_w_{w}/"
+        fname = dir + "pasch_1_log.txt"
+        with open(fname, "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                if "co_val mean: " in line:
+                    begin = line.find("co_val mean: ") + len("co_val mean: ")
+                    num = float(line[begin:])
+                    pasch_1_y.append(num)
+        fname = dir + "pasch_log.txt"
+        with open(fname, "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                if "co_val mean: " in line:
+                    begin = line.find("co_val mean: ") + len("co_val mean: ")
+                    num = float(line[begin:])
+                    pasch_y.append(num)
+    plt.plot(x, pasch_1_y, label='pasch_1')
+    plt.plot(x, pasch_y, label='pasch')
+    plt.xlabel('number of workers')
+    plt.ylabel('coefficient of variation')
+    plt.title("Coefficient of variation of pasch_1 and pasch with workers")
+    plt.legend()
+    plt.savefig("cv_w_new.jpg")
+
+
+def draw_hr_w_new():
+    x = [2, 5, 10, 20, 50, 100, 200, 500]
+    pasch_1_y, pasch_y = [], []
+    for w in x:
+        dir = f"./logs/log_main_pasch3_w_{w}/"
+        fname = dir + "pasch_1_log.txt"
+        with open(fname, "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                if "rate: " in line:
+                    begin = line.find("rate: ") + len("rate: ")
+                    num = float(line[begin:])
+                    pasch_1_y.append(num)
+        fname = dir + "pasch_log.txt"
+        with open(fname, "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                if "rate: " in line:
+                    begin = line.find("rate: ") + len("rate: ")
+                    num = float(line[begin:])
+                    pasch_y.append(num)
+    plt.plot(x, pasch_1_y, label='pasch_1')
+    plt.plot(x, pasch_y, label='pasch')
+    plt.xlabel('number of workers')
+    plt.ylabel('hit rate')
+    plt.title("Hit rate of pasch_1 and pasch")
+    plt.legend()
+    plt.savefig("hr_w_new.jpg")
+
+
 def draw_hr_c_new():
     x = [0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500]
     pasch_1_y = [0.009486, 0.0502, 0.0708, 0.163, 0.19775, 0.2838, 0.3253, 0.3798, 0.43278, 0.43529]

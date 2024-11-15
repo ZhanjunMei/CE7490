@@ -170,9 +170,8 @@ def run_pasch_3():
 
     tasks = Functions(num=task_num, file_name=tasks_file)
 
-    for c in [0.01, 0.05]:
-        cache_size = c * 1024
-        log_dir = f"log_main_pasch3_cache_{c}"
+    for worker_num in [2, 5, 10, 20, 50, 100, 200, 500]:
+        log_dir = f"log_main_pasch3_w_{worker_num}"
         # for pasch1
         logger = Logger(name="pasch_1", params=params, dir=log_dir)
         workers = [Worker(f"worker_{i}", worker_th, logger=logger, cache_size=cache_size) for i in range(worker_num)]
