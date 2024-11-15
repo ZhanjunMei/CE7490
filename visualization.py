@@ -33,8 +33,6 @@ def draw_fin_t_w_new():
     plt.legend()
     plt.savefig("fin_t_w_new.jpg")
 
-draw_fin_t_w_new()
-
 
 def draw_cv_w_new():
     x = [2, 5, 10, 20, 50, 100, 200, 500]
@@ -153,8 +151,6 @@ def draw_fin_t_cache():
     plt.ylabel('finish time (s)')
     plt.legend()
     plt.savefig("fin_t_cache.jpg")
-
-draw_fin_t_cache()
 
 
 def draw_alloc_t():
@@ -337,6 +333,3 @@ def draw_cv_main():
     plt.ylabel('coefficient of variation')
     plt.legend()
     plt.savefig("cv.jpg")
-
-# draw_cv_main()
-
